@@ -1,0 +1,10 @@
+# Môi trường & API Keys
+.env
+
+# Môi trường ảo Python
+.venv/
+venv/
+
+# Cache của Python
+__pycache__/
+*.pyc
