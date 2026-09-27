@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from enum import Enum
 
 
-
 @dataclass
 class TextDelta:
     content: str
@@ -11,10 +10,12 @@ class TextDelta:
     def __str__(self):
         return self.content
 
+
 class EventType(str, Enum):
     TEXT_DELTA = "text_delta"
     MESSAGE_COMPLETE = "message_complete"
     ERROR = "error"
+
 
 @dataclass
 class TokenUsage:
@@ -26,10 +27,11 @@ class TokenUsage:
     def __add__(self, other: TokenUsage):
         return TokenUsage(
             prompt_tokens=self.prompt_tokens + other.prompt_tokens,
-            completion_tokens= self.completion_tokens + other.completion_tokens,
-            total_tokens= self.total_tokens + other.total_tokens,
-            cached_tokens= self.cached_tokens + other.cached_tokens
+            completion_tokens=self.completion_tokens + other.completion_tokens,
+            total_tokens=self.total_tokens + other.total_tokens,
+            cached_tokens=self.cached_tokens + other.cached_tokens,
         )
+
 
 @dataclass
 class StreamEvent:
