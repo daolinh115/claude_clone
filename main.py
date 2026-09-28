@@ -1,6 +1,3 @@
-from typing import Any
-
-from client.llm_client import LLMClient
 import asyncio
 import click
 
@@ -11,12 +8,6 @@ class CLI:
 
     def run_single(self):
         pass
-
-
-async def run(message: list[dict[str, Any]]):
-    client = LLMClient()
-    async for event in client.chat_completion(message, True):
-        print(event)
 
 
 @click.command()
