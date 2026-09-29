@@ -5,7 +5,7 @@ from typing import Any, AsyncGenerator
 from openai.types.chat import ChatCompletionChunk
 import os
 from dotenv import load_dotenv
-from client.response import EventType, StreamEvent, TextDelta, TokenUsage
+from client.response import StreamEventType, StreamEvent, TextDelta, TokenUsage
 
 load_dotenv()
 
@@ -53,7 +53,7 @@ class LLMClient:
                     await asyncio.sleep(wait_time)
                 else:
                     yield StreamEvent(
-                        type=EventType.ERROR, error=f"Rate limit exceed: {e}"
+                        type=StreamEventType.ERROR, error=f"Rate limit exceed: {e}"
                     )
                     return
             except APIConnectionError as e:
@@ -62,11 +62,11 @@ class LLMClient:
                     await asyncio.sleep(wait_time)
                 else:
                     yield StreamEvent(
-                        type=EventType.ERROR, error=f"API connection error: {e}"
+                        type=StreamEventType.ERROR, error=f"API connection error: {e}"
                     )
                     return
             except APIError as e:
-                yield StreamEvent(type=EventType.ERROR, error=f"API error: {e}")
+                yield StreamEvent(type=StreamEventType.ERROR, error=f"API error: {e}")
                 return
 
     async def _stream_response(
@@ -97,12 +97,14 @@ class LLMClient:
 
             if delta.content:
                 yield StreamEvent(
-                    type=EventType.TEXT_DELTA,
+                    type=StreamEventType.TEXT_DELTA,
                     text_delta=TextDelta(content=delta.content),
                 )
 
         yield StreamEvent(
-            type=EventType.MESSAGE_COMPLETE, finish_reason=finish_reason, usage=usage
+            type=StreamEventType.MESSAGE_COMPLETE,
+            finish_reason=finish_reason,
+            usage=usage,
         )
 
     async def _non_stream_response(
@@ -124,7 +126,7 @@ class LLMClient:
             )
 
         yield StreamEvent(
-            type=EventType.MESSAGE_COMPLETE,
+            type=StreamEventType.MESSAGE_COMPLETE,
             text_delta=text_delta,
             finish_reason=choice.finish_reason,
             usage=usage,

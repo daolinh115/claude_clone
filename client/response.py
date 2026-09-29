@@ -35,7 +35,7 @@ class TokenUsage:
 
 @dataclass
 class StreamEvent:
-    type: StreamEvent
+    type: StreamEventType
     text_delta: TextDelta | None = None
     error: str | None = None
     finish_reason: str | None = None
