@@ -22,10 +22,25 @@ class CLI:
     async def _process_message(self, message: str) -> str | None:
         if not self.agent:
             return None
+        assistance_streaming = False
+
         async for event in self.agent.run(message):
             if event.type == AgentStreamEventType.TEXT_DELTA:
                 content = event.data.get("content", "")
+                if not assistance_streaming:
+                    self.tui.begin_assistance()
+                    assistance_streaming = True
                 self.tui._stream_assistance_delta(content)
+            elif event.type == AgentStreamEventType.TEXT_COMPLETE:
+                final_response = event.data.get("content")
+                if assistance_streaming:
+                    self.tui.end_assistance()
+                    assistance_streaming = False
+            elif event.type == AgentStreamEventType.AGENT_ERROR:
+                error = event.data.get("error", "Unknown error")
+                if assistance_streaming:
+
+        # return final_response
 
 
 @click.command()
