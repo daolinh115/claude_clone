@@ -23,6 +23,7 @@ class CLI:
         if not self.agent:
             return None
         assistance_streaming = False
+        final_response: str | None = None
 
         async for event in self.agent.run(message):
             if event.type == AgentStreamEventType.TEXT_DELTA:
@@ -38,9 +39,9 @@ class CLI:
                     assistance_streaming = False
             elif event.type == AgentStreamEventType.AGENT_ERROR:
                 error = event.data.get("error", "Unknown error")
-                if assistance_streaming:
+                console.print(f"\n[error]Error: {error}[/error]")
 
-        # return final_response
+        return final_response
 
 
 @click.command()
