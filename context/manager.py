@@ -45,6 +45,6 @@ class ContextManager:
         messages = []
         if self._system_prompt:
             messages.append({"role": "system", "content": self._system_prompt})
-        for item in messages:
+        for item in self._message:
             messages.append(item.to_dict())
         return messages
