@@ -23,13 +23,32 @@ class LLMClient:
             )
         return self._client
 
+    def _built_tools(self, tools: list[dict[str, Any]]):
+        return [
+            {
+                "type": "function",
+                "function": {
+                    "name": tool["name"],
+                    "description": tool.get("description", ""),
+                    "parameters": tool.get(
+                        "parameters",
+                        {"type": "object", "properties": {}},
+                    ),
+                },
+            }
+            for tool in tools
+        ]
+
     async def close(self) -> None:
         if self._client:
             await self._client.close()
             self._client = None
 
     async def chat_completion(
-        self, message: list[dict[str, Any]], stream: bool = True
+        self,
+        message: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+        stream: bool = True,
     ) -> AsyncGenerator[StreamEvent, None]:
 
         client = self.get_client()

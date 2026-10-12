@@ -71,7 +71,7 @@ class ReadFileTool(Tool):
                 end_idx = total_lines
             selected_line = lines[start_idx:end_idx]
             formatted_lines = []
-            for i, line in enumerate(start_idx, start_idx + 1):
+            for i, line in enumerate(selected_line, start_idx + 1):
                 formatted_lines.append(f"{i:6}|{line}")
             output = "\n".join(formatted_lines)
             token_count = count_tokens(output)
