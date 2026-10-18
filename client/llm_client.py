@@ -57,6 +57,9 @@ class LLMClient:
             "messages": message,
             "stream": stream,
         }
+        if tools:
+            kwargs["tools"] = self._built_tools(tools)
+            kwargs["tool_choice"] = "auto"
         for attempt in range(self._max_retry + 1):
             try:
                 if stream:
@@ -96,6 +99,7 @@ class LLMClient:
         chunk: ChatCompletionChunk
         usage: TokenUsage | None = None
         finish_reason: str | None = None
+        tool_calls: dict[int, dict[str, Any]] = {}
 
         async for chunk in response:
             if hasattr(chunk, "usage") and chunk.usage:
@@ -119,6 +123,22 @@ class LLMClient:
                     type=StreamEventType.TEXT_DELTA,
                     text_delta=TextDelta(content=delta.content),
                 )
+            if delta.tool_calls:
+                for tool_call_delta in delta.tool_calls:
+                    idx = tool_call_delta.index
+                    if idx not in tool_calls:
+                        tool_calls[idx] = {
+                            "id": tool_call_delta.id or "",
+                            "name": "",
+                            "argument": "",
+                        }
+                        if tool_call_delta.function:
+                            if tool_call_delta.function.name:
+                                tool_calls[idx]["name"] = tool_call_delta.function.name
+                                yield StreamEvent(
+                                    type=StreamEventType.TOOL_CALL_START,
+                                    tool_call_delta=
+                                )
 
         yield StreamEvent(
             type=StreamEventType.MESSAGE_COMPLETE,
@@ -145,7 +165,7 @@ class LLMClient:
             )
 
         yield StreamEvent(
-            type=StreamEventType.MESSAGE_COMPLETE,
+            type=StreamEventType.  MESSAGE_COMPLETE,
             text_delta=text_delta,
             finish_reason=choice.finish_reason,
             usage=usage,

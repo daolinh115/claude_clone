@@ -15,6 +15,9 @@ class StreamEventType(str, Enum):
     TEXT_DELTA = "text_delta"
     MESSAGE_COMPLETE = "message_complete"
     ERROR = "error"
+    TOOL_CALL_START = "tool_call_start"
+    TOOL_CALL_DELTA = "tool_call_delta"
+    TOOL_CALL_COMPLETE = "tool_call_complete"
 
 
 @dataclass

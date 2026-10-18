@@ -53,7 +53,7 @@ class ToolRegistry:
             )
         invocation = ToolInvocation(params=params, cwd=cwd)
         try:
-            await tool.execute(invocation)
+            return await tool.execute(invocation)
         except Exception as e:
             logger.exception(f"Tool {name} raised unexpected error")
             return ToolResult.error_result(
@@ -63,6 +63,6 @@ class ToolRegistry:
 
 def create_default_registry() -> ToolRegistry:
     registry = ToolRegistry()
-    for tool_class in get_all_builtin_tools:
+    for tool_class in get_all_builtin_tools():
         registry.register(tool_class())
     return registry
