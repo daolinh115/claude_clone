@@ -5,7 +5,13 @@ from typing import Any, AsyncGenerator
 from openai.types.chat import ChatCompletionChunk
 import os
 from dotenv import load_dotenv
-from client.response import StreamEventType, StreamEvent, TextDelta, TokenUsage
+from client.response import (
+    StreamEventType,
+    StreamEvent,
+    TextDelta,
+    TokenUsage,
+    ToolCallDelta,
+)
 
 load_dotenv()
 
@@ -137,7 +143,10 @@ class LLMClient:
                                 tool_calls[idx]["name"] = tool_call_delta.function.name
                                 yield StreamEvent(
                                     type=StreamEventType.TOOL_CALL_START,
-                                    tool_call_delta=
+                                    tool_call_delta=ToolCallDelta(
+                                        call_id=tool_calls[id]["id"],
+                                        name=tool_call_delta.fuction.name,
+                                    ),
                                 )
 
         yield StreamEvent(
@@ -165,7 +174,7 @@ class LLMClient:
             )
 
         yield StreamEvent(
-            type=StreamEventType.  MESSAGE_COMPLETE,
+            type=StreamEventType.MESSAGE_COMPLETE,
             text_delta=text_delta,
             finish_reason=choice.finish_reason,
             usage=usage,

@@ -93,7 +93,7 @@ bước 4: Chạy agent loop (đây là phần giao tiếp với LLM)
 bước 5: Chuẩn hóa dữ liệu trả về từ llm
 bước 6: Tích luỹ toàn bộ response (response += content)
 bước 7: Sau khi stream kết thúc, lưu vào assistant Message
-bước 8: Phát Text\_Complete
+bước 8: Phát Text_Complete
 bước 9: Phát thông báo Agent hoàn thành công việc
 
 ## Error Handling
