@@ -13,7 +13,7 @@ class Agent:
         self.context_manager = ContextManager()
         self.tool_registry = create_default_registry()
 
-    async def run(self, message: str):
+    async def run(self, message: str)->AsyncGenerator[AgentEvent, None]:
         yield AgentEvent.agent_start(message)
         # add a user message to context
         self.context_manager.add_user_message(message)
@@ -25,7 +25,7 @@ class Agent:
 
         yield AgentEvent.agent_end(final_response)
 
-    async def _agentic_loop(self) -> AsyncGenerator[AgentStreamEventType, None]:
+    async def _agentic_loop(self) -> AsyncGenerator[AgentEvent, None]:
         response_text = ""
         tool_schema = self.tool_registry.get_schemas()
         async for event in self.client.chat_completion(
