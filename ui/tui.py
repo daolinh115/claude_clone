@@ -1,3 +1,5 @@
+from typing import Any
+
 from rich.console import Console
 from rich.theme import Theme
 from rich.rule import Rule
@@ -44,6 +46,7 @@ class TUI:
     def __init__(self, console: Console | None = None):
         self.console = console if console is not None else get_console()
         self._stream_assitance_open = False
+        self._tool_args_by_call_id: dict[str, dict[str, Any]] = {}
 
     def begin_assistance(self) -> None:
         self.console.print()
@@ -57,3 +60,11 @@ class TUI:
 
     def _stream_assistance_delta(self, content: str) -> None:
         self.console.print(content, end="", markup=False)
+
+    def tool_call_start(self, call_id: str, tool_kind:str | None, name: str, arguments: dict[str, Any]):
+        self._tool_args_by_call_id[call_id] = arguments
+        border_style = f"tool.{tool_kind}" if tool_kind else "tool"
+        title = Text.assemble(
+            ("⁕", "muted"),
+            (name, "tool")
+        )

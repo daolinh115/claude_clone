@@ -33,7 +33,6 @@ class ToolResult:
     def success_result(cls, output: str, **kwargs: Any):
         return cls(success=True, output=output, error=None, **kwargs)
 
-    @classmethod
     def to_model_output(self)->str:
         if self.success:
             return self.output

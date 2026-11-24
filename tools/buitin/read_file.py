@@ -75,7 +75,7 @@ class ReadFileTool(Tool):
                 formatted_lines.append(f"{i:6}|{line}")
             output = "\n".join(formatted_lines)
             # output = "\n".join(f"{i:6}|{line}" for i, line in enumerate(selected_lines, start_idx + 1))
-            token_count = count_tokens(output)
+            token_count = count_tokens(output, "nvidia/nemotron-3-ultra-550b-a55b:free")
             if token_count > self.MAX_OUTPUT_TOKENS:
                 output = truncate_text(
                     output,
