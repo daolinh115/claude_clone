@@ -36,12 +36,12 @@ class ReadFileTool(Tool):
         params = ReadfileParams(**invocation.params)
         path = resolve_path(invocation.cwd, params.path)
         if not path.exists():
-            return ToolResult.error(f"File not found {path}")
+            return ToolResult.error_result(f"File not found {path}")
         if not path.is_file():
-            return ToolResult.error(f"Path is not a file {path}")
+            return ToolResult.error_result(f"Path is not a file {path}")
         file_size = path.stat().st_size
         if file_size > self.MAX_FILE_SIZE:
-            return ToolResult.error(
+            return ToolResult.error_result(
                 f"File too large ({file_size/(1024*1024):.1f}MB)."
                 f"Maximum is {self.MAX_FILE_SIZE/(1024*1024):.0f}MB"
             )
@@ -69,11 +69,12 @@ class ReadFileTool(Tool):
                 end_idx = min(start_idx + params.limit, total_lines)
             else:
                 end_idx = total_lines
-            selected_line = lines[start_idx:end_idx]
+            selected_lines = lines[start_idx:end_idx]
             formatted_lines = []
-            for i, line in enumerate(selected_line, start_idx + 1):
+            for i, line in enumerate(selected_lines, start_idx + 1):
                 formatted_lines.append(f"{i:6}|{line}")
             output = "\n".join(formatted_lines)
+            # output = "\n".join(f"{i:6}|{line}" for i, line in enumerate(selected_lines, start_idx + 1))
             token_count = count_tokens(output)
             if token_count > self.MAX_OUTPUT_TOKENS:
                 output = truncate_text(
@@ -102,3 +103,14 @@ class ReadFileTool(Tool):
             )
         except Exception as e:
             ToolResult.error_result(f"Failed to read file: {e}")
+            
+if __name__ == "__main__":
+    import asyncio, tempfile
+    from pathlib import Path
+
+    with tempfile.TemporaryDirectory() as tmp:
+        p = Path(tmp) / "test.txt"
+        p.write_text("line 1\nline 2\nline 3", encoding="utf-8")
+        res = asyncio.run(ReadFileTool().execute(ToolInvocation(params={"path": str(p), "offset": 2, "limit": 1}, cwd=Path(tmp))))
+        assert res.success and "2|line 2" in res.output, f"Lỗi: {res}"
+        print("✅ ReadFileTool OK:\n" + res.output)

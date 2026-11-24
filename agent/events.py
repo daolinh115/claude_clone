@@ -5,6 +5,7 @@ from typing import Any
 
 
 from client.response import TokenUsage
+from tools.base import ToolResult
 
 
 class AgentStreamEventType(str, Enum):
@@ -16,6 +17,10 @@ class AgentStreamEventType(str, Enum):
     # Text streaming
     TEXT_DELTA = "text_delta"
     TEXT_COMPLETE = "text_complete"
+
+    # Tool
+    TOOL_CALL_START = "Tool call start"
+    TOOL_CALL_COMPLETE = "Tool call complete"
 
 
 @dataclass
@@ -52,3 +57,20 @@ class AgentEvent:
     @classmethod
     def text_complete(cls, content: str) -> AgentEvent:
         return cls(type=AgentStreamEventType.TEXT_COMPLETE, data={"content": content})
+
+    @classmethod
+    def tool_call_start(cls, call_id: str, name: str, arguments: dict[str, Any]):
+        return cls(type=AgentStreamEventType.TOOL_CALL_START, data={'call_id': call_id, 'name': name, 'arguments': arguments})
+
+    @classmethod
+    def tool_call_complete(cls, call_id: str, name: str, result: ToolResult):
+        return cls(type=AgentStreamEventType.TOOL_CALL_START, 
+                   data={
+                       'call_id': call_id,
+                        'name': name,
+                        'success': result.success,
+                        'output': result.output,
+                        'error': result.error,
+                        'metadata': result.metadata,
+                        'truncated': result.truncated
+                        })

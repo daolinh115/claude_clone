@@ -89,8 +89,8 @@ class Tool(abc.ABC):
 
     async def get_confirmation(
         self, invocation: ToolInvocation
-    ) -> ToolInvocation | None:
-        if not self.is_mutating(invocation):
+    ) -> ToolConfirmation | None:
+        if not self.is_mutating(invocation.params):
             return None
         return ToolConfirmation(
             tool_name=self.name,
